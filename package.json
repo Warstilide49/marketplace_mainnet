@@ -1,0 +1,24 @@
+{
+  "name": "ignitus_marketplace_frontend",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "parcel src/index.html --open",
+    "build-for-me":"parcel build src/index.html --public-url https://warstilide49.github.io/token_marketplace/"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ipfs-http-client": "^56.0.3",
+    "near-api-js": "^0.44.2",
+    "parcel": "^2.3.2",
+    "regenerator-runtime": "^0.13.9",
+    "webpack": "^5.67.0"
+  },
+  "devDependencies": {
+    "process": "^0.11.10",
+    "webpack-cli": "^4.9.2"
+  }
+}
