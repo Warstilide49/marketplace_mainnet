@@ -4,15 +4,11 @@ import {clearContentBody, provokeLogin} from "./utils.js"
 
 export async function createDOM(e) {
 
-	let contract = e.target.contract;
-
-	let contract_metadata = await contract.nft_metadata();
-
 	let main_container=document.createElement("div")
 	provokeLogin(main_container, "Please Log In with your NEAR Wallet");
 	
 	let container=document.createElement("div")
-	container.innerHTML=`<h1>Available Sales from ${contract_metadata.name}</h1>
+	container.innerHTML=`<h1>Available Sales</h1>
 						<div id='sales_container'></div>`
 	container.id='sales';
 	container.classList.add('page_style')
@@ -26,12 +22,12 @@ export async function createDOM(e) {
 	clearContentBody()
 	content.insertBefore(main_container, footer)
 
-	populateItems(contract)
+	populateItems()
 }
 
 // Think of a way to implement paging as well, next step for sure
 
-async function populateItems(contract) {
+async function populateItems() {
 	let sales_content = document.getElementById('sales_container');
-	populateSales(sales_content, contract);
+	populateSales(sales_content);
 }

@@ -1,22 +1,29 @@
-export async function populateSales(sales_container, contract){
+import {Contract} from 'near-api-js'
+
+export async function populateSales(sales_container){
 	
 	try{
-		let all_sales=await window.marketplace_contract.get_sales_by_nft_contract_id({'nft_contract_id':contract.contractId,'limit':40}); //Contract id mentioned explicitly
+		let all_sales=await window.marketplace_contract.get_sales({'limit':9}); 
 		
 		//Filtered out the ones that are auctions
 		let sales= all_sales.filter( sale=>!sale["is_auction"] )
 		let token_ids=sales.map(sale=>sale.token_id);
+		let contracts = sales.map(sale=>sale.nft_contract_id);
 
 		let tokens=[];
 		for(let i=0;i<token_ids.length;i++){
-		  let token=await contract.nft_token({'token_id': token_ids[i]})
-		  tokens.push(token);
+			let contract = await new Contract(window.walletConnection.account(), contracts[i], {
+			    viewMethods: ['nft_metadata', 'nft_total_supply', 'nft_tokens_for_owner', 'nft_token'],
+			    changeMethods: ['nft_mint', 'nft_transfer', 'nft_approve', 'nft_revoke'],
+			})
+			let token=await contract.nft_token({'token_id': token_ids[i]})
+			const contract_metadata = await contract.nft_metadata();
+			const base_uri = contract_metadata.base_uri;
+			Object.assign(token, {base_uri});
+			tokens.push(token);
 		}
 		
-		const contract_metadata = await contract.nft_metadata();
-		const base_uri = contract_metadata.base_uri;
-		
-		createSalesDOM(sales_container, sales, tokens, base_uri);
+		createSalesDOM(sales_container, sales, tokens);
 
 	}
 	catch(e){
@@ -29,7 +36,7 @@ export async function populateSales(sales_container, contract){
 	}    
 }
 
-function createSalesDOM(container, sales, tokens, base_uri){
+function createSalesDOM(container, sales, tokens){
 	container.id="items"
 	container.classList.add('tokens');
 
@@ -39,17 +46,17 @@ function createSalesDOM(container, sales, tokens, base_uri){
 	}
 
 	for(let i=0;i<sales.length;i+=1){
-		container.appendChild(createSaleFromObject(sales[i], tokens[i], base_uri))
+		container.appendChild(createSaleFromObject(sales[i], tokens[i]))
 	}
 }
 
-function createSaleFromObject(sale, token, base_uri){
+function createSaleFromObject(sale, token){
 
 	// Finding media 
 	let media = token.metadata.media;
 
-	if(base_uri){
-		media = base_uri + '/' + token.metadata.media;
+	if(token.base_uri){
+		media = token.base_uri + '/' + token.metadata.media;
 	}
 
 	let saleDOM=document.createElement('div')

@@ -22,7 +22,9 @@ export async function initContract() {
   window.marketplace_contract = await new Contract(window.walletConnection.account(), nearConfig.marketplaceContract, {
     viewMethods: ['get_supply_sales', 'get_supply_by_owner_id', 'get_sales_by_owner_id', 'get_sales_by_nft_contract_id', 'get_supply_by_nft_contract_id','get_contract_ids', 
                   'storage_minimum_balance','storage_balance_of',
-                  'get_contract_ids_for_account'],
+                  'get_contract_ids_for_account',
+                  'get_sales',
+                  'get_auctions'],
     changeMethods: ['offer', 'add_bid', 'remove_sale', 'end_auction', 'storage_deposit', 'storage_withdraw',
                     'add_contract_for_account', 'remove_contract_for_account'],
   })
@@ -107,4 +109,19 @@ export function createModal(width, height, modalId){
 
   container.appendChild(modal);
   return {container,modal}
+}
+
+export async function getContract(set, contract_objects, contract) {
+  if (set.has(contract)){
+    return contract_objects[contract]
+  }
+  else{
+    set.add(contract);
+    contract_objects[contract] = await new Contract(window.walletConnection.account(), contract, {
+        viewMethods: ['nft_metadata', 'nft_total_supply', 'nft_tokens_for_owner', 'nft_token'],
+        changeMethods: ['nft_mint', 'nft_transfer', 'nft_approve', 'nft_revoke'],
+    })
+
+    return contract_objects[contract]
+  }
 }

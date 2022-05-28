@@ -1,4 +1,5 @@
-import {clearContentBody, provokeLogin} from "./utils.js"
+import {clearContentBody, provokeLogin, getContract} from "./utils.js"
+import {Contract} from 'near-api-js'
 
 const EXCEPTION = 300000000;
 const NEAR_IN_YOCTO = 1000000000000000000000000;
@@ -6,16 +7,12 @@ const MIN_BID_INCREMENT = 0.01;
 
 export async function createDOM(e){
 
-	let contract = e.target.contract;
-
-	let contract_metadata = await contract.nft_metadata();
-
 	// Creating container
 	let main_container=document.createElement("div")
 	provokeLogin(main_container, "Please Log In with your NEAR Wallet To participate in the auction");
 	
 	let container=document.createElement("div")
-	container.innerHTML=`<h1>Auctions from ${contract_metadata.name}</h1>
+	container.innerHTML=`<h1>Auctions</h1>
 						<div id='auction_container'></div>`
 	container.id='auctions_tab';
 	container.classList.add('page_style')
@@ -31,25 +28,38 @@ export async function createDOM(e){
 
 	// populating
 	let auction_content = document.getElementById('auction_container');
-    populateItems(auction_content, contract, contract_metadata)
+  populateItems(auction_content)
 }
 
-export async function populateItems(container, contract, metadata){
+export async function populateItems(container){
 	try{
-		let all_sales=await window.marketplace_contract.get_sales_by_nft_contract_id({'nft_contract_id':contract.contractId,'limit':40});
+		let all_sales=await window.marketplace_contract.get_auctions({'limit':9}); 
 		
 		// Only the ones that are auction remain
 		let sales=all_sales.filter(sale=>sale["is_auction"])
 		let token_ids=sales.map(sale=>sale.token_id);
 
 		let tokens=[];
+
+		let contracts = sales.map(sale=>sale.nft_contract_id);
+		const set = new Set();
+		const contract_objects = [];
+
 		for(let i=0;i<token_ids.length;i++){
+			// Not much of a better solution tbh
+			let contract = await getContract(set, contract_objects, contracts[i])
+			/*let contract = await new Contract(window.walletConnection.account(), contracts[i], {
+			    viewMethods: ['nft_metadata', 'nft_total_supply', 'nft_tokens_for_owner', 'nft_token'],
+			    changeMethods: ['nft_mint', 'nft_transfer', 'nft_approve', 'nft_revoke'],
+			})*/
 		  let token = await contract.nft_token({'token_id': token_ids[i]})
-		  tokens.push(token);
+		  const contract_metadata = await contract.nft_metadata();
+			const base_uri = contract_metadata.base_uri;
+			Object.assign(token, {base_uri});
+			tokens.push(token);
 		}
 
-		const base_uri = metadata.base_uri;
-		createSalesDOM(sales, tokens, container, base_uri)
+		createSalesDOM(sales, tokens, container)
 	}
 	catch(e){
 		alert(
@@ -61,7 +71,7 @@ export async function populateItems(container, contract, metadata){
 	}
 }
 
-function createSalesDOM(sales, tokens, container, base_uri){
+function createSalesDOM(sales, tokens, container){
 	container.id='items';
 	container.classList.add('tokens');
 
@@ -71,19 +81,19 @@ function createSalesDOM(sales, tokens, container, base_uri){
 	}
 
 	for(let i=0;i<sales.length;i+=1){
-		container.appendChild(createSaleFromObject(sales[i], tokens[i], base_uri))
+		container.appendChild(createSaleFromObject(sales[i], tokens[i]))
 	}
 
 	return;
 }
 
-function createSaleFromObject(sale, token, base_uri){
+function createSaleFromObject(sale, token){
 
 	// Finding media 
 	let media = token.metadata.media;
 
-	if(base_uri){
-		media = base_uri + '/' + token.metadata.media;
+	if(token.base_uri){
+		media = token.base_uri + '/' + token.metadata.media;
 	}
 
 	// Token container

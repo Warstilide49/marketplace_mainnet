@@ -2,6 +2,8 @@ import {populateSales} from "./saleHandling.js"
 import * as mint from "./mint.js"
 import * as storage from "./storage.js"
 import * as preview from "./preview_page.js"
+import * as sales from "./sales.js"
+import * as auctions from "./auctions.js"
 import * as terms from "./terms.js"
 
 import 'regenerator-runtime/runtime'
@@ -43,10 +45,10 @@ function createHeader(){
 	mintButton.addEventListener('click', mint.createDOM);
 
 	let saleButton=header.querySelector('#sales_redirect');
-	saleButton.addEventListener('click', preview.createDOM);
+	saleButton.addEventListener('click', sales.createDOM);
 
 	let auctionButton=header.querySelector('#auction_redirect');
-	auctionButton.addEventListener('click', preview.createDOM);
+	auctionButton.addEventListener('click', auctions.createDOM);
 
 	let terms_and_conditions = header.querySelector('#tc_redirect');
 	terms_and_conditions.addEventListener('click', terms.createDOM);
@@ -102,7 +104,7 @@ function createBody(){
 
 	provokeLogin(container,'Please Log In with your NEAR Wallet To Buy the Nfts on Sale!');
 
-	container.innerHTML+=`<div id="body_title">Items At Sale From Our Nft Contract!</div>
+	container.innerHTML+=`<div id="body_title">Items At Sale!</div>
 						<div id="main_sale_container"></div>`
 	return container;
 }

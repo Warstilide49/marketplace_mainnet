@@ -1,24 +1,9 @@
 import {clearContentBody, provokeLogin} from "./utils.js"
 import {Contract} from 'near-api-js'
-import * as sales from "./sales.js"
 import * as auctions from "./auctions.js"
 import * as tokens from "./tokensTab.js"
 
 export function createDOM(e){
-
-	let section; // sales, auctions, your tokens
-	
-	switch(e.target.id){
-		case "sales_redirect" :
-			section = 'sales'
-			break
-		case "auction_redirect" :
-			section = 'auctions'
-			break
-		case "token_redirect" :
-			section = 'your tokens'
-			break
-	}
 
 	// Creating container
 	let main_container=document.createElement("div")
@@ -26,27 +11,26 @@ export function createDOM(e){
 	
 	let container=document.createElement("div")
 	container.innerHTML=
-		`<h1>Select Collection for viewing ${section}</h1>
+		`<h1>Select Collection for viewing your tokens</h1>
 		<div id='collections'></div>`
 
-	if (section=="your tokens"){
-		let addContractBlock = document.createElement('div');
-		addContractBlock.id = 'add_contract_block'
-		addContractBlock.innerHTML = 
-			`<h2> Add Collection </h2>
-			<form id='contract-form'>
-				<input type="text" placeholder="Valid Contract Id" required>
-				<button type="submit">Submit</button>
-			</form>`
+	// Add collections block
+	let addContractBlock = document.createElement('div');
+	addContractBlock.id = 'add_contract_block'
+	addContractBlock.innerHTML = 
+		`<h2> Add Collection </h2>
+		<form id='contract-form'>
+			<input type="text" placeholder="Valid Contract Id" required>
+			<button type="submit">Submit</button>
+		</form>`
 
-		let form = addContractBlock.querySelector('form');
-		let input = addContractBlock.querySelector('input');
-		form.addEventListener("submit", (e)=> {
-			e.preventDefault();
-			tokens.addContract(input.value)
-		});
-		container.append(addContractBlock)
-	}
+	let form = addContractBlock.querySelector('form');
+	let input = addContractBlock.querySelector('input');
+	form.addEventListener("submit", (e)=> {
+		e.preventDefault();
+		tokens.addContract(input.value)
+	});
+	container.append(addContractBlock)
 
 	container.id='preview_page';
 	container.classList.add('page_style')
@@ -60,19 +44,19 @@ export function createDOM(e){
 	clearContentBody()
 	content.insertBefore(main_container, footer)
 
-	populateCollections(section)
+	populateCollections()
 }
 
-async function populateCollections(section){
+async function populateCollections(){
 	let main_container=document.getElementById('collections');
 	main_container.id='items';
 
 	try{
-		let collections = await findCollection(section);		// find the contract ids list according to section
-		let requiredFunction = findExitFunction(section);		// returns the relevant function where it should go
+		let collections = await getCollection();		
+		let requiredFunction = getExitFunction();		
 
 		if(collections.length==0){
-			main_container.textContent = `No collection for ${section} found`;
+			main_container.textContent = `No collection for your tokens found`;
 			return;
 		}
 		for(let i=0; i<collections.length; i++){
@@ -116,10 +100,6 @@ async function createCollectionDOM(requiredFunction, collection) {
 		close_button.contract_id = collection;
 		close_button.addEventListener("click", ()=>{ tokens.removeContract(collection) });
 	}
-	else{
-		container.innerHTML=`<img class='cursor' height='200px' class='item_image'>
-							<div class='contract_name'>${metadata.name}</div>`
-	}
 
 	// Defining it later cos I faced a problem with using svgs
 	let img = container.querySelector('img')
@@ -131,51 +111,17 @@ async function createCollectionDOM(requiredFunction, collection) {
 	return container;
 }
 
-async function findCollection(section) {
+async function getCollection() {
 	let collections;
 	let toDelete=[]
 
-	if(section=="sales"){
-		collections = await window.marketplace_contract.get_contract_ids();
-		for(let i=0; i<collections.length; i++){
-			if (await window.marketplace_contract.get_number_of_offers({nft_contract_id: collections[i]})==0){
-				toDelete.push(collections[i]);
-			}
-		}
-		while(toDelete.length>0){
-			collections = collections.filter(x => x!=toDelete[0]);
-			toDelete.shift()
-		}
-	}
-	else if(section=="auctions"){
-		collections = await window.marketplace_contract.get_contract_ids();
-		for(let i=0; i<collections.length; i++){
-			if (await window.marketplace_contract.get_number_of_auctions({nft_contract_id: collections[i]})==0){
-				toDelete.push(collections[i]);
-			}
-		}
-		while(toDelete.length>0){
-			collections = collections.filter(x => x!=toDelete[0]);
-			toDelete.shift()
-		}
-		
-	}
-	else if(section=='your tokens'){
-		collections = await window.marketplace_contract.get_contract_ids_for_account({account_id: window.accountId});
-		collections.push( window.nft_contract.contractId );
-	}
+	collections = await window.marketplace_contract.get_contract_ids_for_account({account_id: window.accountId});
+	collections.push( window.nft_contract.contractId );
 
 	return collections
 }
 
-function findExitFunction(section){
-	switch (section){
-		case "sales":
-			return sales.createDOM
-		case "auctions":
-			return auctions.createDOM
-		case "your tokens":
-			return tokens.createDOM
-	}
+function getExitFunction(){
+	return tokens.createDOM
 }
 

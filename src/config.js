@@ -1,8 +1,6 @@
 const nft_contract = 'dev-1653362742618-42287399483761' //'dev-1652185815615-38783641891685' //'royalties.evin.testnet' //'dev-1646240406152-71422260461975'
-//This is the latest contract with approvals
-//royalties.evin.testnet will be used further since it has all the implementations.
 
-const marketplace_contract= 'dev-1653363544091-47600905380994' //'dev-1652450363200-32566891032927' //'dev-1651817325992-49412045689708' //'auction_market.evin.testnet' 
+const marketplace_contract= 'dev-1653732663518-34599242351498' //'dev-1653363544091-47600905380994' //'dev-1652450363200-32566891032927' //'dev-1651817325992-49412045689708' //'auction_market.evin.testnet' 
 
 function getConfig(env) {
   switch (env) {
