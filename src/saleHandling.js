@@ -3,10 +3,8 @@ import {Contract} from 'near-api-js'
 export async function populateSales(sales_container){
 	
 	try{
-		let all_sales=await window.marketplace_contract.get_sales({'limit':9}); 
+		let sales=await window.marketplace_contract.get_sales({'limit':10}); 
 		
-		//Filtered out the ones that are auctions
-		let sales= all_sales.filter( sale=>!sale["is_auction"] )
 		let token_ids=sales.map(sale=>sale.token_id);
 		let contracts = sales.map(sale=>sale.nft_contract_id);
 

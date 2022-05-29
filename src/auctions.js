@@ -33,10 +33,8 @@ export async function createDOM(e){
 
 export async function populateItems(container){
 	try{
-		let all_sales=await window.marketplace_contract.get_auctions({'limit':9}); 
+		let sales=await window.marketplace_contract.get_auctions({'limit':10}); 
 		
-		// Only the ones that are auction remain
-		let sales=all_sales.filter(sale=>sale["is_auction"])
 		let token_ids=sales.map(sale=>sale.token_id);
 
 		let tokens=[];
