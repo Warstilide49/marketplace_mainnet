@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "parcel src/index.html --open",
-    "build-for-me":"parcel build src/index.html --public-url https://warstilide49.github.io/token_marketplace/"
+    "build-for-me":"parcel build src/index.html --public-url https://warstilide49.github.io/marketplace_mainnet/"
   },
   "keywords": [],
   "author": "",

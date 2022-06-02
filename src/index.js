@@ -1,5 +1,5 @@
 import {populateSales} from "./saleHandling.js"
-import * as mint from "./mint.js"
+//import * as mint from "./mint.js"
 import * as storage from "./storage.js"
 import * as preview from "./preview_page.js"
 import * as sales from "./sales.js"
@@ -18,7 +18,6 @@ function createHeader(){
 	header.innerHTML=`	<div id='name'>Ignitus Networks</div>
 						<div id="tabs">
 							<div class="cursor" id="home_redirect">Home</div>
-							<div class="cursor" id="mint_redirect">Mint</div>
 							<div class="cursor" id="sales_redirect">Sales</div>
 							<div class="cursor" id="auction_redirect">Auctions</div>
 							<div class="cursor" id="token_redirect">My Tokens</div>
@@ -26,6 +25,8 @@ function createHeader(){
 							<div class="cursor" id="tc_redirect" >T&C</div>
 							<button id="login_button">${state ? 'Log Out' : 'Log In'}</button>
 						</div>`
+
+						// <div class="cursor" id="mint_redirect">Mint</div> (Left this out)
 
 	let button=header.querySelector('#login_button');
 
@@ -41,8 +42,10 @@ function createHeader(){
 	let homeButton=header.querySelector('#home_redirect');
 	homeButton.addEventListener('click', home);
 	
+	/*
 	let mintButton=header.querySelector('#mint_redirect');
 	mintButton.addEventListener('click', mint.createDOM);
+	*/
 
 	let saleButton=header.querySelector('#sales_redirect');
 	saleButton.addEventListener('click', sales.createDOM);
