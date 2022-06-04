@@ -29,5 +29,6 @@ export async function createDOM(e) {
 
 async function populateItems() {
 	let sales_content = document.getElementById('sales_container');
+	sales_content.classList.add('standAlone')		// To differentiate between the 2 sales containers(limit changed)
 	populateSales(sales_content);
 }
