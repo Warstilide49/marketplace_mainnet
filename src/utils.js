@@ -24,7 +24,9 @@ export async function initContract() {
                   'storage_minimum_balance','storage_balance_of',
                   'get_contract_ids_for_account',
                   'get_sales',
-                  'get_auctions'],
+                  'get_auctions',
+                  'get_number_of_offers',
+                  'get_number_of_auctions'],
     changeMethods: ['offer', 'add_bid', 'remove_sale', 'end_auction', 'storage_deposit', 'storage_withdraw',
                     'add_contract_for_account', 'remove_contract_for_account'],
   })

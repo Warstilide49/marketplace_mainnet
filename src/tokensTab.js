@@ -1,11 +1,10 @@
 import {clearContentBody, provokeLogin, checkAccount, checkStandard} from "./utils.js"
+import * as pagination from './pagination'
 
 const GAS_FEE= `100000000000000`
 const NEAR_IN_YOCTO=1000000000000000000000000;
 
-export async function createDOM(e){
-
-	let contract = e.target.contract;
+export async function createDOM(contract, current=1){
 
 	let content=document.getElementById("content");
 	let footer=document.getElementById("footer");
@@ -16,18 +15,19 @@ export async function createDOM(e){
 	container.id="tokens_tab"
 	container.classList.add('page_style')
 	container.innerHTML=`<h1>Tokens</h1>`
-    container.append(await tokensDOM(contract))
+  container.append(await tokensDOM(contract, (current-1)*9 ))
+  pagination.createDOM(contract, container, current)
 
 	content.insertBefore(container, footer)
 }
 
-async function tokensDOM(contract){
+async function tokensDOM(contract, index){
 	let container=document.createElement('div');
 	container.id="items"
 	container.classList.add('tokens');
 	
 	//Shows a maximum of 20 tokens. Note this
-	let result= await contract.nft_tokens_for_owner({account_id:window.accountId, limit:20});
+	let result= await contract.nft_tokens_for_owner({account_id:window.accountId, from_index:index.toString() ,limit:9});
 
 	const contract_metadata = await contract.nft_metadata();
 	const base_uri = contract_metadata.base_uri;

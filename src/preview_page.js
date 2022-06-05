@@ -79,7 +79,7 @@ async function createCollectionDOM(requiredFunction, collection) {
 	let container=document.createElement('div')
 
 	let contract = await new Contract(window.walletConnection.account(), collection, {
-	    viewMethods: ['nft_metadata', 'nft_total_supply', 'nft_tokens_for_owner', 'nft_token'],
+	    viewMethods: ['nft_metadata', 'nft_total_supply', 'nft_tokens_for_owner', 'nft_token', 'nft_supply_for_owner'],
 	    changeMethods: ['nft_mint', 'nft_transfer', 'nft_approve', 'nft_revoke'],
 	})
 
@@ -105,8 +105,9 @@ async function createCollectionDOM(requiredFunction, collection) {
 	let img = container.querySelector('img')
 	img.src= metadata.icon
 
-	img.contract = contract;
-	img.addEventListener('click', requiredFunction);
+	img.addEventListener('click', ()=>{
+		requiredFunction(contract);
+	});
 
 	return container;
 }

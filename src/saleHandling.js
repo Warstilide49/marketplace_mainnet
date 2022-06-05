@@ -1,6 +1,6 @@
 import {Contract} from 'near-api-js'
 
-export async function populateSales(sales_container){
+export async function populateSales(sales_container, index=0){
 	
 	try{
 
@@ -12,7 +12,7 @@ export async function populateSales(sales_container){
 			limit = 6
 		}
 
-		let sales=await window.marketplace_contract.get_sales({ limit }); 
+		let sales=await window.marketplace_contract.get_sales({ from_index: index.toString(), limit }); 
 
 		let token_ids=sales.map(sale=>sale.token_id);
 		let contracts = sales.map(sale=>sale.nft_contract_id);

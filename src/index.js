@@ -48,10 +48,14 @@ function createHeader(){
 	*/
 
 	let saleButton=header.querySelector('#sales_redirect');
-	saleButton.addEventListener('click', sales.createDOM);
+	saleButton.addEventListener('click', ()=>{
+		sales.createDOM();
+	});
 
 	let auctionButton=header.querySelector('#auction_redirect');
-	auctionButton.addEventListener('click', auctions.createDOM);
+	auctionButton.addEventListener('click', ()=>{
+		auctions.createDOM();
+	});
 
 	let terms_and_conditions = header.querySelector('#tc_redirect');
 	terms_and_conditions.addEventListener('click', terms.createDOM);
@@ -137,7 +141,7 @@ function home(){
   content.insertBefore(createBody(), footer);
 
   let sales_container = document.getElementById("main_sale_container"); 
-  populateSales(sales_container, window.nft_contract)
+  populateSales(sales_container)
 }
 
 // Initial page
@@ -146,6 +150,6 @@ window.nearInitPromise = initContract()
 							.then(initialSite)
 							.then( ()=>{
 								let sales_container = document.getElementById("main_sale_container");  
-								populateSales(sales_container, window.nft_contract);
+								populateSales(sales_container);
 							});
 

@@ -1,8 +1,9 @@
 import {Contract} from 'near-api-js'
 import {populateSales} from "./saleHandling.js"
 import {clearContentBody, provokeLogin} from "./utils.js"
+import * as pagination from './pagination'
 
-export async function createDOM(e) {
+export async function createDOM(current=1) {
 
 	let main_container=document.createElement("div")
 	provokeLogin(main_container, "Please Log In with your NEAR Wallet");
@@ -13,6 +14,8 @@ export async function createDOM(e) {
 	container.id='sales';
 	container.classList.add('page_style')
 
+	pagination.createDOM(null, container, current)
+
     main_container.append(container)
 	
 	// Stuff to do to change body
@@ -22,13 +25,13 @@ export async function createDOM(e) {
 	clearContentBody()
 	content.insertBefore(main_container, footer)
 
-	populateItems()
+	populateItems(current)
 }
 
 // Think of a way to implement paging as well, next step for sure
 
-async function populateItems() {
+async function populateItems(current) {
 	let sales_content = document.getElementById('sales_container');
 	sales_content.classList.add('standAlone')		// To differentiate between the 2 sales containers(limit changed)
-	populateSales(sales_content);
+	populateSales(sales_content, (current-1)*9);
 }

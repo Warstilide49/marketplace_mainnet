@@ -344,6 +344,13 @@ button:hover {
 	border : 3px solid #446A46;
 	padding: 2px;
 }
+
+#pagination_container{
+	display: flex;
+	gap: 100px;
+}
+
+
 /* Footer */
 
 #footer{

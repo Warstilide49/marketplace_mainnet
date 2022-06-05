@@ -1,11 +1,12 @@
 import {clearContentBody, provokeLogin, getContract} from "./utils.js"
 import {Contract} from 'near-api-js'
+import * as pagination from './pagination'
 
 const EXCEPTION = 300000000;
 const NEAR_IN_YOCTO = 1000000000000000000000000;
 const MIN_BID_INCREMENT = 0.01;
 
-export async function createDOM(e){
+export async function createDOM(current=1){
 
 	// Creating container
 	let main_container=document.createElement("div")
@@ -17,7 +18,9 @@ export async function createDOM(e){
 	container.id='auctions_tab';
 	container.classList.add('page_style')
 
-    main_container.append(container)
+	pagination.createDOM(null, container, current)
+
+  main_container.append(container)
 	
 	// Stuff to do to change body
 	let content=document.getElementById("content");
@@ -28,12 +31,12 @@ export async function createDOM(e){
 
 	// populating
 	let auction_content = document.getElementById('auction_container');
-  populateItems(auction_content)
+  populateItems(auction_content, (current-1)*9 );
 }
 
-export async function populateItems(container){
+export async function populateItems(container, index){
 	try{
-		let sales=await window.marketplace_contract.get_auctions({'limit':10}); 
+		let sales=await window.marketplace_contract.get_auctions({'from_index': index.toString(), 'limit':9}); 
 		
 		let token_ids=sales.map(sale=>sale.token_id);
 
